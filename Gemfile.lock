@@ -70,6 +70,3 @@ DEPENDENCIES
   actionmailer (= 4.2.5)
   dotenv
   rb-inotify
-
-BUNDLED WITH
-   1.11.2
