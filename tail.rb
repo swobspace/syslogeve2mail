@@ -54,7 +54,7 @@ open(logfile, 'r') do |file|
     sleep 3
     file.each_line do |line|
       next unless line =~ /suricata.*"timestamp"/
-      m = line.match(/\A([A-Za-z]{3} [ 0-9]{2} \d\d:\d\d:\d\d) (\w+) suricata\[\d+\]: (\{.+\})/)
+      m = line.match(/\A([A-Za-z]{3} [ 0-9]{2} \d\d:\d\d:\d\d) (\w+) suricata.*\[\d+\]: (\{.+\})/)
       begin
         hash = JSON.parse(m[3])
         hash['sensor'] = m[2]
