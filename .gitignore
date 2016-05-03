@@ -20,6 +20,8 @@ build/
 /_yardoc/
 /doc/
 /rdoc/
+/local/*
+!/local/.gitkeep
 
 ## Environment normalization:
 /.bundle/
