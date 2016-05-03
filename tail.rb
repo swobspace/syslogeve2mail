@@ -33,6 +33,12 @@ class Mailer < ActionMailer::Base
 
     mail(subject: subject)
   end
+
+  def unparsable(sensor, bulk)
+    @bulk = bulk
+    subject = "#{sensor}: unparsable content"
+    mail(subject: subject)
+  end
 end
 
 Mailer.boot.deliver_now
@@ -45,14 +51,21 @@ open(logfile, 'r') do |file|
   file.seek(0, IO::SEEK_END)		# rewind
   queue = INotify::Notifier.new
   queue.watch(logfile, :modify) do |event|
+    sleep 3
     file.each_line do |line|
       next unless line =~ /suricata.*"timestamp"/
       m = line.match(/\A([A-Za-z]{3} [ 0-9]{2} \d\d:\d\d:\d\d) (\w+) suricata\[\d+\]: (\{.+\})/)
-      hash = JSON.parse(m[3])
-      hash['sensor'] = m[2]
-      email = Mailer.alert_mail(hash)
-      puts email
-      email.deliver_now
+      begin
+        hash = JSON.parse(m[3])
+        hash['sensor'] = m[2]
+        email = Mailer.alert_mail(hash)
+        puts email
+        email.deliver_now
+      rescue
+        email = Mailer.unparsable(m[2], line)
+        puts email
+        email.deliver_now
+      end
     end
   end
   queue.run
